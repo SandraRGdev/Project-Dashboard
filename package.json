@@ -1,16 +1,48 @@
 {
   "name": "projectops-dashboard",
   "version": "1.0.0",
-  "description": "Dashboard de gestión de proyectos ProjectOps - Angular 20",
-  "private": true,
+  "description": "Dashboard de gestión de proyectos ProjectOps - Angular 20 with Signals",
+  "private": false,
   "type": "module",
+  "homepage": "https://github.com/tu-usuario/Project-Dashboard#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tu-usuario/Project-Dashboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/Project-Dashboard/issues"
+  },
+  "keywords": [
+    "angular",
+    "angular20",
+    "dashboard",
+    "project-management",
+    "signals",
+    "zoneless",
+    "typescript",
+    "scss"
+  ],
+  "author": "Sandra",
+  "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve -o",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "test:coverage": "ng test --code-coverage",
+    "test:watch": "ng test --watch",
+    "e2e": "ng e2e",
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.html\" \"src/**/*.scss\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.html\" \"src/**/*.scss\"",
+    "release:major": "npm version major -m \"chore: release %s\"",
+    "release:minor": "npm version minor -m \"chore: release %s\"",
+    "release:patch": "npm version patch -m \"chore: release %s\"",
+    "deploy:gh": "ng deploy --base-href=/Project-Dashboard/",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@angular/animations": "^20.0.0",
@@ -30,7 +62,23 @@
     "@angular/cli": "^20.0.0",
     "@angular/compiler-cli": "^20.0.0",
     "sass": "^1.83.0",
-    "typescript": "~5.8.0"
+    "typescript": "~5.8.0",
+    "angular-cli-ghpages": "^2.0.0",
+    "prettier": "^3.4.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.html": [
+      "prettier --write"
+    ],
+    "src/**/*.scss": [
+      "prettier --write"
+    ]
   },
   "engines": {
     "node": ">=18.0.0",
