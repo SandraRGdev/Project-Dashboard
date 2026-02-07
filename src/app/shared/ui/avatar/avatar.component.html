@@ -1,0 +1,13 @@
+<div [class]="avatarClass()" [style]="sizeStyles()">
+  @if (hasImage()) {
+  <img class="avatar-image" [src]="src()" [alt]="name()" />
+  } @else {
+  <div class="avatar-initials" [style.background]="gradient()">
+    {{ initials() }}
+  </div>
+  }
+
+  @if (status(); as status) {
+  <span class="avatar-status avatar-status--{{ status }}"></span>
+  }
+</div>

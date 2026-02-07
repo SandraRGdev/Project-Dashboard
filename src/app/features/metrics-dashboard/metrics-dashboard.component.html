@@ -1,0 +1,284 @@
+<div class="metrics-dashboard">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">Dashboard</h1>
+      <p class="dashboard-subtitle">Vista general de ProjectOps</p>
+    </div>
+    <div class="header-date">
+      {{ formatDate(currentDate) }}
+    </div>
+  </header>
+
+  <!-- Global Metrics -->
+  @if (globalMetrics(); as metrics) {
+  <section class="global-metrics">
+    <!-- KPI Cards Row 1 -->
+    <div class="kpi-row">
+      <article class="kpi-card kpi-projects">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg>
+          </div>
+          <span class="kpi-trend" [class.positive]="metrics.activeProjects > 0">+{{ metrics.activeProjects }} activos</span>
+        </div>
+        <div class="kpi-value">{{ metrics.totalProjects }}</div>
+        <div class="kpi-label">Proyectos Totales</div>
+        <div class="kpi-breakdown">
+          <span class="breakdown-item">{{ metrics.completedProjects }} completados</span>
+          <span class="breakdown-item">{{ metrics.pendingProjects }} pendientes</span>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-tasks">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          </div>
+          <span class="kpi-trend positive">+{{ metrics.tasksCompletedThisWeek }} esta semana</span>
+        </div>
+        <div class="kpi-value">{{ metrics.totalTasks }}</div>
+        <div class="kpi-label">Tareas Totales</div>
+        <div class="kpi-breakdown">
+          <span class="breakdown-item">{{ metrics.completedTasks }} completadas</span>
+          <span class="breakdown-item breakdown-warning">{{ metrics.overdueTasks }} retrasadas</span>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-team">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          </div>
+          <span class="kpi-trend" [class.positive]="metrics.availableMembers > 0">{{ metrics.availableMembers }} disponibles</span>
+        </div>
+        <div class="kpi-value">{{ metrics.totalTeamMembers }}</div>
+        <div class="kpi-label">Miembros del Equipo</div>
+        <div class="kpi-breakdown">
+          <span class="breakdown-item">{{ metrics.averageTasksPerMember }} tareas/promedio</span>
+          <span class="breakdown-item" [class.breakdown-warning]="metrics.overloadedMembers > 0">
+            {{ metrics.overloadedMembers }} sobrecargados
+          </span>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-progress">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z"/></svg>
+          </div>
+          <span class="kpi-trend" [style.color]="getProgressColor(metrics.overallProgress)">
+            {{ getHealthScoreLabel(metrics.overallProgress) }}
+          </span>
+        </div>
+        <div class="kpi-value">{{ metrics.overallProgress }}%</div>
+        <div class="kpi-label">Progreso General</div>
+        <div class="kpi-progress-bar">
+          <div class="progress-fill" [style.width.%]="metrics.overallProgress"
+               [style.background]="getProgressColor(metrics.overallProgress)"></div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Health Score Cards -->
+    <div class="health-cards">
+      <article class="health-card">
+        <div class="health-header">
+          <span class="health-label">Salud del Proyecto</span>
+          <span class="health-score" [style.color]="getHealthScoreColor(metrics.projectHealthScore)">
+            {{ metrics.projectHealthScore }}%
+          </span>
+        </div>
+        <div class="health-bar">
+          <div class="health-fill" [style.width.%]="metrics.projectHealthScore"
+               [style.background]="getHealthScoreColor(metrics.projectHealthScore)"></div>
+        </div>
+        <div class="health-status">{{ getHealthScoreLabel(metrics.projectHealthScore) }}</div>
+      </article>
+
+      <article class="health-card">
+        <div class="health-header">
+          <span class="health-label">Utilización del Equipo</span>
+          <span class="health-score" [style.color]="getUtilizationColor(metrics.teamUtilization)">
+            {{ metrics.teamUtilization }}%
+          </span>
+        </div>
+        <div class="health-bar">
+          <div class="health-fill" [style.width.%]="metrics.teamUtilization"
+               [style.background]="getUtilizationColor(metrics.teamUtilization)"></div>
+        </div>
+        <div class="health-status">
+          @if (metrics.teamUtilization > 90) {Sobrecarga}
+          @else if (metrics.teamUtilization > 70) {Óptimo}
+          @else {Subutilización}
+        </div>
+      </article>
+
+      <article class="health-card">
+        <div class="health-header">
+          <span class="health-label">Entrega a Tiempo</span>
+          <span class="health-score" [style.color]="getHealthScoreColor(metrics.onTimeDeliveryRate)">
+            {{ metrics.onTimeDeliveryRate }}%
+          </span>
+        </div>
+        <div class="health-bar">
+          <div class="health-fill" [style.width.%]="metrics.onTimeDeliveryRate"
+               [style.background]="getHealthScoreColor(metrics.onTimeDeliveryRate)"></div>
+        </div>
+        <div class="health-status">{{ getHealthScoreLabel(metrics.onTimeDeliveryRate) }}</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Tasks Distribution Donut -->
+  <section class="tasks-distribution">
+    <article class="distribution-card">
+      <h3 class="card-title">Distribución de Tareas</h3>
+      @if (getDonutSegments(metrics); as segments) {
+      <div class="donut-chart">
+        <svg class="donut-svg" viewBox="0 0 100 100">
+          <circle class="donut-bg" cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+          <circle class="donut-segment completed" cx="50" cy="50" r="40" fill="none" stroke="#10b981"
+                  stroke-width="12" [attr.stroke-dasharray]="segments.completed * 2.51 + ' 251'"
+                  stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+          <circle class="donut-segment in-progress" cx="50" cy="50" r="40" fill="none" stroke="#3b82f6"
+                  stroke-width="12" [attr.stroke-dasharray]="segments.inProgress * 2.51 + ' 251'"
+                  [attr.stroke-dashoffset]="'-' + segments.completed * 2.51" transform="rotate(-90 50 50)"/>
+          <circle class="donut-segment pending" cx="50" cy="50" r="40" fill="none" stroke="#f59e0b"
+                  stroke-width="12" [attr.stroke-dasharray]="segments.pending * 2.51 + ' 251'"
+                  [attr.stroke-dashoffset]="'-' + (segments.completed + segments.inProgress) * 2.51"
+                  transform="rotate(-90 50 50)"/>
+        </svg>
+        <div class="donut-center">
+          <span class="donut-value">{{ metrics.totalTasks }}</span>
+          <span class="donut-label">Total</span>
+        </div>
+      </div>
+      <div class="donut-legend">
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #10b981;"></span>
+          <span>Completadas ({{ metrics.completedTasks }})</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #3b82f6;"></span>
+          <span>En Progreso ({{ metrics.inProgressTasks }})</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #f59e0b;"></span>
+          <span>Pendientes ({{ metrics.pendingTasks }})</span>
+        </div>
+      </div>
+      }
+    </article>
+
+    <!-- Workload Distribution -->
+    <article class="distribution-card">
+      <h3 class="card-title">Distribución de Carga de Trabajo</h3>
+      <div class="workload-list">
+        @for (member of workloadDistribution().slice(0, 6); track member.memberId) {
+        <div class="workload-item">
+          <div class="workload-info">
+            <span class="workload-name">{{ member.name }}</span>
+            <span class="workload-tasks">{{ member.tasksCount }} tareas · {{ member.projectsCount }} proy</span>
+          </div>
+          <div class="workload-bar-wrapper">
+            <div class="workload-bar">
+              <div class="workload-fill" [style.width.%]="member.utilization"
+                   [style.background]="getUtilizationColor(member.utilization)"></div>
+            </div>
+            <span class="workload-percent" [style.color]="getUtilizationColor(member.utilization)">
+              {{ member.utilization }}%
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+    </article>
+  </section>
+
+  <!-- Side Panels -->
+  <section class="side-panels">
+    <!-- Upcoming Deadlines -->
+    <article class="panel-card">
+      <div class="panel-header">
+        <h3 class="panel-title">
+          <svg class="panel-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          Próximos Vencimientos
+        </h3>
+        <span class="panel-count">{{ upcomingDeadlines().length }}</span>
+      </div>
+      <div class="panel-content">
+        @if (upcomingDeadlines().length > 0) {
+        <ul class="deadline-list">
+          @for (deadline of upcomingDeadlines(); track deadline.taskId) {
+          <li class="deadline-item">
+            <span class="deadline-title">{{ deadline.title }}</span>
+            <span class="deadline-date">{{ formatRelativeDate(deadline.dueDate) }}</span>
+          </li>
+          }
+        </ul>
+        } @else {
+        <p class="panel-empty">Sin vencimientos próximos</p>
+        }
+      </div>
+    </article>
+
+    <!-- Top Priority -->
+    <article class="panel-card">
+      <div class="panel-header">
+        <h3 class="panel-title">
+          <svg class="panel-icon" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5z"/></svg>
+          Prioridad Alta
+        </h3>
+        <span class="panel-count">{{ topPriorityItems().length }}</span>
+      </div>
+      <div class="panel-content">
+        @if (topPriorityItems().length > 0) {
+        <ul class="priority-list">
+          @for (item of topPriorityItems(); track item.item.id) {
+          <li class="priority-item">
+            <span class="priority-dot"></span>
+            <div class="priority-info">
+              <span class="priority-title">{{ item.name }}</span>
+              <span class="priority-type">{{ item.type === 'project' ? 'Proyecto' : 'Tarea' }}</span>
+            </div>
+          </li>
+          }
+        </ul>
+        } @else {
+        <p class="panel-empty">Sin items de alta prioridad</p>
+        }
+      </div>
+    </article>
+
+    <!-- Recent Activity -->
+    <article class="panel-card">
+      <div class="panel-header">
+        <h3 class="panel-title">
+          <svg class="panel-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Actividad Reciente
+        </h3>
+      </div>
+      <div class="panel-content">
+        @if (recentActivity().length > 0) {
+        <ul class="activity-list">
+          @for (activity of recentActivity(); track activity.id) {
+          <li class="activity-item">
+            <div class="activity-indicator"
+                 [class.completed]="activity.status === 'completed'"
+                 [class.progress]="activity.status === 'in-progress'"></div>
+            <div class="activity-info">
+              <span class="activity-title">{{ activity.title }}</span>
+              <span class="activity-time">{{ formatRelativeDate(activity.updatedAt) }}</span>
+            </div>
+          </li>
+          }
+        </ul>
+        } @else {
+        <p class="panel-empty">Sin actividad reciente</p>
+        }
+      </div>
+    </article>
+  </section>
+  }
+</div>

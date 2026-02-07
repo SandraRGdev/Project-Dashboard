@@ -1,0 +1,28 @@
+<article [class]="cardClass" (click)="handleClick()">
+  @if (title(); as title) {
+  <div class="card-header">
+    <div class="card-header-left">
+      @if (icon()) {
+      <div class="card-icon">
+        <ng-content select="[slot=icon]"></ng-content>
+      </div>
+      }
+      <div class="card-titles">
+        <h3 class="card-title">{{ title }}</h3>
+        @if (subtitle(); as subtitle) {
+        <p class="card-subtitle">{{ subtitle }}</p>
+        }
+      </div>
+    </div>
+    <div class="card-actions">
+      <ng-content select="[slot=actions]"></ng-content>
+    </div>
+  </div>
+  }
+
+  <div class="card-body">
+    <ng-content></ng-content>
+  </div>
+
+  <ng-content select="[slot=footer]"></ng-content>
+</article>

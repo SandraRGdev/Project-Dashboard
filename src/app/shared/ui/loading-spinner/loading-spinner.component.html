@@ -1,0 +1,9 @@
+<div class="loading-spinner" [class.full-screen]="fullScreen()">
+  <div class="spinner-wrapper">
+    <div class="spinner" [style.width.px]="sizePx[size()]" [style.height.px]="sizePx[size()]"
+         [class]="['spinner--' + color()]"></div>
+    @if (text(); as text) {
+    <p class="spinner-text">{{ text }}</p>
+    }
+  </div>
+</div>

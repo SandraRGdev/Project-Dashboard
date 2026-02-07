@@ -1,0 +1,188 @@
+<div class="team-overview">
+  <!-- Header -->
+  <header class="overview-header">
+    <div class="header-left">
+      <h1 class="overview-title">Equipo</h1>
+      <span class="member-count">{{ stats().totalMembers }} miembros</span>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  @if (stats(); as stats) {
+  <section class="stats-grid">
+    <article class="stat-card stat-primary">
+      <div class="stat-header">
+        <span class="stat-label">Total Miembros</span>
+        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      </div>
+      <div class="stat-value">{{ stats.totalMembers }}</div>
+      <div class="stat-footer">
+        <span class="stat-sublabel">{{ stats.activeMembers }} activos</span>
+      </div>
+    </article>
+
+    <article class="stat-card stat-info">
+      <div class="stat-header">
+        <span class="stat-label">Total Tareas</span>
+        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </div>
+      <div class="stat-value">{{ stats.totalTasks }}</div>
+      <div class="stat-footer">
+        <span class="stat-sublabel">{{ stats.averageTasksPerMember }} promedio/miembro</span>
+      </div>
+    </article>
+
+    <article class="stat-card stat-success">
+      <div class="stat-header">
+        <span class="stat-label">Disponibles</span>
+        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+      </div>
+      <div class="stat-value">{{ stats.availableMembers }}</div>
+      <div class="stat-footer">
+        <span class="stat-sublabel">Para asignar</span>
+      </div>
+    </article>
+
+    <article class="stat-card stat-warning">
+      <div class="stat-header">
+        <span class="stat-label">Sobrecargados</span>
+        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      </div>
+      <div class="stat-value">{{ overloadedMembersCount() }}</div>
+      <div class="stat-footer">
+        <span class="stat-sublabel">Requieren atención</span>
+      </div>
+    </article>
+  </section>
+  }
+
+  <!-- Top Performers -->
+  @if (topPerformers().length > 0) {
+  <section class="top-performers">
+    <h2 class="section-title">Top Performers</h2>
+    <div class="performers-list">
+      @for (member of topPerformers(); track member.id) {
+      <div class="performer-card" [style.background]="getAvatarGradient(member.id)">
+        <span class="performer-initials">{{ member.avatar }}</span>
+        <div class="performer-info">
+          <span class="performer-name">{{ member.name }}</span>
+          <span class="performer-tasks">{{ member.tasksCount }} tareas</span>
+        </div>
+        <svg class="trophy-icon" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+      </div>
+      }
+    </div>
+  </section>
+  }
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Buscar:</label>
+      <input type="text" class="search-input" placeholder="Buscar miembros..."
+             [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)">
+    </div>
+
+    <div class="filter-group">
+      <label>Rol:</label>
+      <select class="filter-select" [value]="selectedRole()" (change)="selectedRole.set($any($event.target).value)">
+        @for (role of roleOptions(); track role) {
+        <option [value]="role">{{ role === 'all' ? 'Todos los roles' : role }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Ordenar por:</label>
+      <div class="sort-buttons">
+        <button class="sort-btn" [class.active]="sortBy() === 'name'" (click)="setSortBy('name')">Nombre</button>
+        <button class="sort-btn" [class.active]="sortBy() === 'tasks'" (click)="setSortBy('tasks')">Tareas</button>
+        <button class="sort-btn" [class.active]="sortBy() === 'projects'" (click)="setSortBy('projects')">Proyectos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+  </div>
+  }
+
+  <!-- Members Grid -->
+  @if (!loading()) {
+  <section class="members-grid">
+    @for (member of membersWithUtilization(); track member.id) {
+    <article class="member-card" (click)="selectMember(member.id)">
+      <!-- Member Header -->
+      <div class="member-header">
+        <div class="member-avatar" [style.background]="getAvatarGradient(member.id)">
+          {{ member.avatar }}
+        </div>
+        <div class="member-info">
+          <h3 class="member-name">{{ member.name }}</h3>
+          <p class="member-role">{{ member.role }}</p>
+        </div>
+        <div class="member-status" [style.color]="getStatusColor(member.status)">
+          <span class="status-dot" [style.backgroundColor]="getStatusColor(member.status)"></span>
+          {{ getStatusLabel(member.status) }}
+        </div>
+      </div>
+
+      <!-- Member Stats -->
+      <div class="member-stats">
+        <div class="stat-item">
+          <span class="stat-label">Tareas</span>
+          <span class="stat-number">{{ member.tasksCount }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Proyectos</span>
+          <span class="stat-number">{{ member.activeProjects.length }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Carga</span>
+          <span class="stat-number" [style.color]="getStatusColor(member.status)">{{ member.utilization }}%</span>
+        </div>
+      </div>
+
+      <!-- Utilization Bar -->
+      <div class="utilization-bar">
+        <div class="utilization-fill"
+             [style.width.%]="member.utilization"
+             [style.background]="getStatusColor(member.status)"></div>
+      </div>
+
+      <!-- Projects -->
+      @if (member.projectNames.length > 0) {
+      <div class="member-projects">
+        <span class="projects-label">Proyectos activos:</span>
+        <div class="project-tags">
+          @for (project of member.projectNames.slice(0, 3); track project) {
+          <span class="project-tag">{{ project }}</span>
+          }
+          @if (member.projectNames.length > 3) {
+          <span class="project-tag more">+{{ member.projectNames.length - 3 }}</span>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Contact -->
+      <div class="member-contact">
+        <svg class="contact-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <span class="email">{{ member.email }}</span>
+      </div>
+    </article>
+    }
+  </section>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && sortedMembers().length === 0) {
+  <div class="empty-state">
+    <svg class="empty-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    <h3>No se encontraron miembros</h3>
+    <p>Intenta ajustar los filtros de búsqueda.</p>
+  </div>
+  }
+</div>

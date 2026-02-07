@@ -1,0 +1,6 @@
+<span [class]="badgeClass()" [ngStyle]="badgeStyle()">
+  @if (variant() === 'status') {
+  <span class="status-dot"></span>
+  }
+  <span class="status-label">{{ displayLabel() }}</span>
+</span>

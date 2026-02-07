@@ -1,0 +1,209 @@
+// ============================================
+// ProjectOps Theme Variables
+// ============================================
+
+// Light Theme (Default)
+:root,
+[data-theme='light'] {
+  // Primary Colors
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+
+  // Semantic Colors
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+
+  // Background Colors
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  // Text Colors
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-inverse: #ffffff;
+
+  // Border Colors
+  --border-color: #e5e7eb;
+  --border-color-light: #f3f4f6;
+  --divider-color: #e5e7eb;
+
+  // Shadow Colors
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  // Sidebar
+  --sidebar-bg: linear-gradient(180deg, #1e1e2e 0%, #181825 100%);
+  --sidebar-text: #cdd6f4;
+  --sidebar-text-muted: #a6adc8;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-hover: rgba(255, 255, 255, 0.1);
+  --sidebar-active: rgba(99, 102, 241, 0.2);
+
+  // Header
+  --header-bg: #ffffff;
+  --header-border: #e5e7eb;
+
+  // Card
+  --card-bg: #ffffff;
+  --card-bg-hover: #f9fafb;
+
+  // Input
+  --input-bg: #f3f4f6;
+  --input-border: #d1d5db;
+  --input-focus-ring: rgba(99, 102, 241, 0.1);
+
+  // Scrollbar
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+// Dark Theme
+[data-theme='dark'] {
+  // Primary Colors
+  --primary: #818cf8;
+  --primary-light: #a5b4fc;
+  --primary-dark: #6366f1;
+
+  // Semantic Colors
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #60a5fa;
+
+  // Background Colors
+  --bg-primary: #1e1e2e;
+  --bg-secondary: #181825;
+  --bg-tertiary: #313244;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  // Text Colors
+  --text-primary: #cdd6f4;
+  --text-secondary: #a6adc8;
+  --text-tertiary: #6c7086;
+  --text-inverse: #1e1e2e;
+
+  // Border Colors
+  --border-color: #45475a;
+  --border-color-light: #313244;
+  --divider-color: #45475a;
+
+  // Shadow Colors
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+  // Sidebar
+  --sidebar-bg: linear-gradient(180deg, #11111b 0%, #1e1e2e 100%);
+  --sidebar-text: #cdd6f4;
+  --sidebar-text-muted: #a6adc8;
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active: rgba(129, 140, 248, 0.2);
+
+  // Header
+  --header-bg: #1e1e2e;
+  --header-border: #45475a;
+
+  // Card
+  --card-bg: #313244;
+  --card-bg-hover: #45475a;
+
+  // Input
+  --input-bg: #1e1e2e;
+  --input-border: #45475a;
+  --input-focus-ring: rgba(129, 140, 248, 0.2);
+
+  // Scrollbar
+  --scrollbar-track: #1e1e2e;
+  --scrollbar-thumb: #45475a;
+  --scrollbar-thumb-hover: #6c7086;
+}
+
+// ============================================
+// Component-specific theme overrides
+// ============================================
+
+// Status Colors - Light
+:root,
+[data-theme='light'] {
+  --status-pending: #f59e0b;
+  --status-in-progress: #3b82f6;
+  --status-completed: #10b981;
+  --status-cancelled: #ef4444;
+}
+
+// Status Colors - Dark
+[data-theme='dark'] {
+  --status-pending: #fbbf24;
+  --status-in-progress: #60a5fa;
+  --status-completed: #34d399;
+  --status-cancelled: #f87171;
+}
+
+// Priority Colors - Light
+:root,
+[data-theme='light'] {
+  --priority-low: #10b981;
+  --priority-medium: #f59e0b;
+  --priority-high: #ef4444;
+}
+
+// Priority Colors - Dark
+[data-theme='dark'] {
+  --priority-low: #34d399;
+  --priority-medium: #fbbf24;
+  --priority-high: #f87171;
+}
+
+// Metric Card Gradients - Light
+:root,
+[data-theme='light'] {
+  --metric-primary-bg: #ffffff;
+  --metric-primary-text: #6366f1;
+  --metric-success-bg: #ffffff;
+  --metric-success-text: #10b981;
+  --metric-warning-bg: #ffffff;
+  --metric-warning-text: #f59e0b;
+  --metric-danger-bg: #ffffff;
+  --metric-danger-text: #ef4444;
+  --metric-info-bg: #ffffff;
+  --metric-info-text: #3b82f6;
+  --metric-purple-bg: #ffffff;
+  --metric-purple-text: #8b5cf6;
+}
+
+// Metric Card Gradients - Dark
+[data-theme='dark'] {
+  --metric-primary-bg: #313244;
+  --metric-primary-text: #818cf8;
+  --metric-success-bg: #313244;
+  --metric-success-text: #34d399;
+  --metric-warning-bg: #313244;
+  --metric-warning-text: #fbbf24;
+  --metric-danger-bg: #313244;
+  --metric-danger-text: #f87171;
+  --metric-info-bg: #313244;
+  --metric-info-text: #60a5fa;
+  --metric-purple-bg: #313244;
+  --metric-purple-text: #c084fc;
+}
+
+// Dashboard Background
+:root,
+[data-theme='light'] {
+  --dashboard-bg: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+[data-theme='dark'] {
+  --dashboard-bg: linear-gradient(135deg, #1e1e2e 0%, #181825 100%);
+}

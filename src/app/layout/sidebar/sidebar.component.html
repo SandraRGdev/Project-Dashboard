@@ -1,0 +1,65 @@
+<aside [class]="sidebarClass()">
+  <!-- Logo Section -->
+  <div class="sidebar-header">
+    @if (!isCollapsed()) {
+    <div class="sidebar-logo">
+      <svg class="logo-icon" viewBox="0 0 24 24">
+        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+      </svg>
+      <span class="logo-text">ProjectOps</span>
+    </div>
+    } @else {
+    <div class="sidebar-logo-collapsed">
+      <svg class="logo-icon" viewBox="0 0 24 24">
+        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+      </svg>
+    </div>
+    }
+    <button class="collapse-btn" (click)="toggleCollapse()">
+      <svg class="collapse-icon" [class.rotated]="isCollapsed()" viewBox="0 0 24 24">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      @for (item of navItems(); track item.route) {
+      <li class="nav-item">
+        <a class="nav-link"
+           [routerLink]="item.route"
+           [class.active]="isActive(item.route)"
+           routerLinkActive="nav-link--active">
+          <div class="nav-icon">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path [attr.d]="iconPaths[item.icon]" />
+            </svg>
+          </div>
+          @if (!isCollapsed()) {
+          <span class="nav-label">{{ item.label }}</span>
+          }
+          @if (!isCollapsed() && item.badge) {
+          <span class="nav-badge" [style.background-color]="item.badgeColor || '#6366f1'">
+            {{ getBadgeValue(item) }}
+          </span>
+          }
+        </a>
+      </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Footer -->
+  @if (!isCollapsed()) {
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">AM</div>
+      <div class="user-info">
+        <span class="user-name">Ana Martínez</span>
+        <span class="user-role">Tech Lead</span>
+      </div>
+    </div>
+  </div>
+  }
+</aside>

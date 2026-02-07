@@ -1,0 +1,211 @@
+<div class="tasks-list">
+  <!-- Header -->
+  <header class="list-header">
+    <div class="header-left">
+      <h1 class="list-title">Tareas</h1>
+      <span class="task-count">{{ sortedTasks().length }} tareas</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="toggleViewMode()">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path [attr.d]="viewMode() === 'board'
+            ? 'M4 5h16v2H4V5zm0 6h16v2H4v-2zm0 6h16v2H4v-2z'
+            : 'M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z'"/>
+        </svg>
+        <span>{{ viewMode() === 'board' ? 'Lista' : 'Tablero' }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Metrics Cards -->
+  @if (metrics(); as metrics) {
+  <section class="metrics-grid">
+    <article class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Total Tareas</span>
+        <svg class="metric-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </div>
+      <div class="metric-value">{{ metrics.total }}</div>
+    </article>
+
+    <article class="metric-card metric-warning">
+      <div class="metric-header">
+        <span class="metric-label">En Progreso</span>
+        <svg class="metric-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <div class="metric-value">{{ getInProgressCount() }}</div>
+    </article>
+
+    <article class="metric-card metric-success">
+      <div class="metric-header">
+        <span class="metric-label">Completadas</span>
+        <svg class="metric-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <div class="metric-value">{{ metrics.byStatus.completed }}</div>
+    </article>
+
+    <article class="metric-card metric-danger">
+      <div class="metric-header">
+        <span class="metric-label">Retrasadas</span>
+        <svg class="metric-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      </div>
+      <div class="metric-value">{{ metrics.overdue }}</div>
+    </article>
+  </section>
+  }
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Buscar:</label>
+      <input type="text" class="search-input" placeholder="Buscar tareas..."
+             [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)">
+    </div>
+
+    <div class="filter-group">
+      <label>Proyecto:</label>
+      <select class="filter-select" [value]="selectedProject()" (change)="selectedProject.set($any($event.target).value)">
+        @for (option of projectOptions(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Estado:</label>
+      <select class="filter-select" [value]="selectedStatus()" (change)="selectedStatus.set($any($event.target).value)">
+        <option value="all">Todos</option>
+        <option value="pending">Pendientes</option>
+        <option value="in-progress">En Progreso</option>
+        <option value="completed">Completadas</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+  </div>
+  }
+
+  <!-- Board View -->
+  @if (!loading() && viewMode() === 'board') {
+  <section class="board-view">
+    @for (column of boardColumns(); track column.status) {
+    <div class="board-column" [style.borderTopColor]="column.color">
+      <div class="column-header">
+        <h3 class="column-title">{{ column.label }}</h3>
+        <span class="column-count">{{ column.tasks.length }}</span>
+      </div>
+
+      <div class="column-tasks">
+        @for (task of column.tasks; track task.id) {
+        <article class="task-card" (click)="selectTask(task.id)"
+                  [class.overdue]="isOverdue(task)">
+          <!-- Priority Badge -->
+          @if (task.priority === 'high') {
+          <div class="priority-indicator" style="background: #ef4444;"></div>
+          }
+
+          <!-- Task Title -->
+          <h4 class="task-title">{{ task.title }}</h4>
+          <p class="task-description">{{ task.description }}</p>
+
+          <!-- Task Meta -->
+          <div class="task-meta">
+            <span class="task-project">{{ task.projectName }}</span>
+            @if (task.dueDate) {
+            <span class="task-due" [class.overdue]="isOverdue(task)">
+              {{ formatDate(task.dueDate) }}
+            </span>
+            }
+          </div>
+
+          <!-- Task Footer -->
+          <div class="task-footer">
+            <span class="task-assignee">ID: {{ task.assigneeId }}</span>
+            @if (task.estimatedHours) {
+            <span class="task-hours">{{ task.actualHours || 0 }}/{{ task.estimatedHours }}h</span>
+            }
+          </div>
+        </article>
+        }
+
+        @if (column.tasks.length === 0) {
+        <div class="empty-column">Sin tareas</div>
+        }
+      </div>
+    </div>
+    }
+  </section>
+  }
+
+  <!-- List View -->
+  @if (!loading() && viewMode() === 'list') {
+  <section class="list-view">
+    <table class="tasks-table">
+      <thead>
+        <tr>
+          <th>Tarea</th>
+          <th>Proyecto</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <th>Asignado</th>
+          <th>Vencimiento</th>
+          <th>Tiempo</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of sortedTasks(); track task.id) {
+        <tr class="task-row" [class.overdue]="isOverdue(task)" (click)="selectTask(task.id)">
+          <td>
+            <div class="task-info">
+              <span class="task-name">{{ task.title }}</span>
+              <span class="task-desc">{{ task.description }}</span>
+            </div>
+          </td>
+          <td>{{ task.projectName }}</td>
+          <td>
+            <span class="status-badge" [style.backgroundColor]="STATUS_COLORS[task.status] + '20'"
+                  [style.color]="STATUS_COLORS[task.status]">
+              {{ STATUS_LABELS[task.status] }}
+            </span>
+          </td>
+          <td>
+            <span class="priority-dot" [style.backgroundColor]="getPriorityColor(task.priority)"></span>
+            {{ getPriorityLabel(task.priority) }}
+          </td>
+          <td>{{ task.assigneeId || '-' }}</td>
+          <td>
+            @if (task.dueDate) {
+            <span [class.overdue-text]="isOverdue(task)">{{ formatDate(task.dueDate) }}</span>
+            } @else {
+            <span class="no-date">-</span>
+            }
+          </td>
+          <td>
+            @if (task.estimatedHours) {
+            <span class="hours">{{ task.actualHours || 0 }}/{{ task.estimatedHours }}h</span>
+            } @else {
+            -
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && sortedTasks().length === 0) {
+  <div class="empty-state">
+    <svg class="empty-icon" viewBox="0 0 24 24">
+      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+    </svg>
+    <h3>No hay tareas</h3>
+    <p>No se encontraron tareas con los filtros actuales.</p>
+  </div>
+  }
+</div>

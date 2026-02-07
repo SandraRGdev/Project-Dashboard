@@ -1,0 +1,280 @@
+<div class="projects-board">
+  <!-- Header -->
+  <header class="board-header">
+    <div class="header-left">
+      <h1 class="board-title">Proyectos</h1>
+      <span class="project-count">{{ sortedProjects().length }} proyectos</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="toggleViewMode()">
+        <svg class="icon" [attr.viewBox]="viewMode() === 'grid' ? '0 0 24 24' : '0 0 24 24'">
+          <use [attr.xlink:href]="viewMode() === 'grid' ? '#icon-list' : '#icon-grid'"></use>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Metrics Cards -->
+  @if (metrics(); as metrics) {
+  <section class="metrics-grid">
+    <article class="metric-card metric-primary">
+      <div class="metric-header">
+        <span class="metric-label">Total Proyectos</span>
+        <svg class="metric-icon" viewBox="0 0 24 24">
+          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+        </svg>
+      </div>
+      <div class="metric-value">{{ metrics.total }}</div>
+      <div class="metric-footer">
+        <span class="metric-sublabel">Activos: {{ getInProgressCount(metrics) }}</span>
+      </div>
+    </article>
+
+    <article class="metric-card metric-success">
+      <div class="metric-header">
+        <span class="metric-label">Completados</span>
+        <svg class="metric-icon" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+      </div>
+      <div class="metric-value">{{ metrics.byStatus.completed }}</div>
+      <div class="metric-footer">
+        <span class="metric-sublabel">
+          {{ Math.round((metrics.byStatus.completed / metrics.total) * 100) || 0 }}% del total
+        </span>
+      </div>
+    </article>
+
+    <article class="metric-card metric-warning">
+      <div class="metric-header">
+        <span class="metric-label">En Progreso</span>
+        <svg class="metric-icon" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      </div>
+      <div class="metric-value">{{ getInProgressCount(metrics) }}</div>
+      <div class="metric-footer">
+        <span class="metric-sublabel">Pendientes: {{ metrics.byStatus.pending }}</span>
+      </div>
+    </article>
+
+    <article class="metric-card metric-info">
+      <div class="metric-header">
+        <span class="metric-label">Prioridad Alta</span>
+        <svg class="metric-icon" viewBox="0 0 24 24">
+          <path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5z"/>
+        </svg>
+      </div>
+      <div class="metric-value">{{ metrics.byPriority.high }}</div>
+      <div class="metric-footer">
+        <span class="metric-sublabel">Media: {{ metrics.byPriority.medium }}</span>
+      </div>
+    </article>
+
+    <article class="metric-card metric-purple">
+      <div class="metric-header">
+        <span class="metric-label">Progreso Promedio</span>
+        <svg class="metric-icon" viewBox="0 0 24 24">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+        </svg>
+      </div>
+      <div class="metric-value">{{ metrics.averageProgress }}%</div>
+      <div class="metric-footer">
+        <div class="progress-bar-mini">
+          <div class="progress-bar-fill" [style.width.%]="metrics.averageProgress"
+               [style.background-color]="getProgressBarColor(metrics.averageProgress)"></div>
+        </div>
+      </div>
+    </article>
+  </section>
+  }
+
+  <!-- Sort Bar -->
+  <div class="sort-bar">
+    <span class="sort-label">Ordenar por:</span>
+    <div class="sort-buttons">
+      <button class="sort-btn" [class.active]="sortBy() === 'startDate'" (click)="setSortBy('startDate')">
+        Fecha
+      </button>
+      <button class="sort-btn" [class.active]="sortBy() === 'priority'" (click)="setSortBy('priority')">
+        Prioridad
+      </button>
+      <button class="sort-btn" [class.active]="sortBy() === 'progress'" (click)="setSortBy('progress')">
+        Progreso
+      </button>
+      <button class="sort-btn" [class.active]="sortBy() === 'name'" (click)="setSortBy('name')">
+        Nombre
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando proyectos...</p>
+  </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && sortedProjects().length === 0) {
+  <div class="empty-state">
+    <svg class="empty-icon" viewBox="0 0 24 24">
+      <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/>
+    </svg>
+    <h3>No hay proyectos</h3>
+    <p>No se encontraron proyectos con los filtros actuales.</p>
+  </div>
+  }
+
+  <!-- Grid View -->
+  @if (!loading() && viewMode() === 'grid') {
+  <section class="projects-grid">
+    @for (project of sortedProjects(); track project.id) {
+    <article class="project-card" (click)="selectProject(project.id)">
+      <!-- Status Banner -->
+      <div class="card-banner" [style.backgroundColor]="STATUS_COLORS[project.status]"></div>
+
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="card-title-row">
+          <h3 class="card-title">{{ project.name }}</h3>
+          <span class="priority-badge" [style.backgroundColor]="getPriorityColor(project.priority) + '20'"
+                [style.color]="getPriorityColor(project.priority)">
+            {{ getPriorityLabel(project.priority) }}
+          </span>
+        </div>
+        <p class="card-description">{{ project.description }}</p>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <!-- Status Badge -->
+        <div class="card-row">
+          <span class="row-label">Estado:</span>
+          <span class="status-badge" [style.backgroundColor]="STATUS_COLORS[project.status] + '20'"
+                [style.color]="STATUS_COLORS[project.status]">
+            {{ STATUS_LABELS[project.status] }}
+          </span>
+        </div>
+
+        <!-- Dates -->
+        <div class="card-row">
+          <span class="row-label">Inicio:</span>
+          <span class="row-value">{{ formatDate(project.startDate) }}</span>
+        </div>
+
+        @if (project.endDate) {
+        <div class="card-row">
+          <span class="row-label">Fin:</span>
+          <span class="row-value">{{ formatDate(project.endDate) }}</span>
+        </div>
+        }
+
+        <!-- Team -->
+        <div class="card-row">
+          <span class="row-label">Equipo:</span>
+          <div class="team-avatars">
+            @for (i of [0, 1, 2]; track i) {
+              @if (i < project.teamMembers.length) {
+              <div class="avatar">{{ project.teamMembers[i] }}</div>
+              } @else if (i === 2 && project.teamMembers.length > 3) {
+              <div class="avatar avatar-more">+{{ project.teamMembers.length - 2 }}</div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="card-footer">
+        <div class="progress-header">
+          <span class="progress-label">Progreso</span>
+          <span class="progress-value">{{ project.progress }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" [style.width.%]="project.progress"
+               [style.backgroundColor]="getProgressBarColor(project.progress)"></div>
+        </div>
+      </div>
+    </article>
+    }
+  </section>
+  }
+
+  <!-- List View -->
+  @if (!loading() && viewMode() === 'list') {
+  <section class="projects-list">
+    <table class="projects-table">
+      <thead>
+        <tr>
+          <th>Proyecto</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <th>Progreso</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Fin</th>
+          <th>Equipo</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (project of sortedProjects(); track project.id) {
+        <tr class="table-row" (click)="selectProject(project.id)">
+          <td>
+            <div class="table-project-info">
+              <span class="table-project-name">{{ project.name }}</span>
+              <span class="table-project-desc">{{ project.description }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="status-badge" [style.backgroundColor]="STATUS_COLORS[project.status] + '20'"
+                  [style.color]="STATUS_COLORS[project.status]">
+              {{ STATUS_LABELS[project.status] }}
+            </span>
+          </td>
+          <td>
+            <span class="priority-badge" [style.backgroundColor]="getPriorityColor(project.priority) + '20'"
+                  [style.color]="getPriorityColor(project.priority)">
+              {{ getPriorityLabel(project.priority) }}
+            </span>
+          </td>
+          <td>
+            <div class="table-progress">
+              <span class="table-progress-value">{{ project.progress }}%</span>
+              <div class="progress-bar-mini">
+                <div class="progress-bar-fill" [style.width.%]="project.progress"
+                     [style.backgroundColor]="getProgressBarColor(project.progress)"></div>
+              </div>
+            </div>
+          </td>
+          <td>{{ formatDate(project.startDate) }}</td>
+          <td>{{ project.endDate ? formatDate(project.endDate) : '-' }}</td>
+          <td>
+            <div class="team-avatars team-avatars-small">
+              @for (i of [0, 1]; track i) {
+                @if (i < project.teamMembers.length) {
+                <div class="avatar avatar-small">{{ project.teamMembers[i] }}</div>
+                } @else if (i === 1 && project.teamMembers.length > 2) {
+                <div class="avatar avatar-small">+{{ project.teamMembers.length - 1 }}</div>
+                }
+              }
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}
+
+<!-- SVG Icons Definition -->
+<svg style="display: none;">
+  <defs>
+    <symbol id="icon-grid" viewBox="0 0 24 24">
+      <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/>
+    </symbol>
+    <symbol id="icon-list" viewBox="0 0 24 24">
+      <path d="M4 5h16v2H4V5zm0 6h16v2H4v-2zm0 6h16v2H4v-2z"/>
+    </symbol>
+  </defs>
+</svg>
