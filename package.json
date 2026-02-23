@@ -63,7 +63,7 @@
     "@angular/compiler-cli": "^20.0.0",
     "sass": "^1.83.0",
     "typescript": "~5.8.0",
-    "angular-cli-ghpages": "^2.0.0",
+    "angular-cli-ghpages": "^3.0.2",
     "prettier": "^3.4.0",
     "husky": "^9.1.0",
     "lint-staged": "^15.2.0"
