@@ -59,7 +59,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.3.43",
     "@angular/build": "^20.3.43",
-    "@angular/cli": "^20.3.43",
+    "@angular/cli": "^22.2.7",
     "@angular/compiler-cli": "^20.3.35",
     "angular-cli-ghpages": "^3.1.2",
     "husky": "^9.1.0",
